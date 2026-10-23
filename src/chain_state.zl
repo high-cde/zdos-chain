@@ -1,0 +1,41 @@
+// ==========================================
+// ZDOS // BLOCKCHAIN STATE & REWARD ENGINE (ZLang)
+// ==========================================
+
+module ZDOSChainState {
+
+    import ZDOSConsensus;
+
+    struct ChainState {
+        u64 current_height;
+        string latest_hash;
+        u64 total_transactions_processed;
+        u64 circulating_zvt;
+    }
+
+    // Inizializzazione dello stato di Genesis della blockchain ZDOS
+    pub fn init_genesis_state() -> ChainState {
+        let state = ChainState {
+            current_height: 1,
+            latest_hash: "0xZD0S7777GENESIS000000000000000000000000000000000000",
+            total_transactions_processed: 0,
+            circulating_zvt: 500000000 // 5 Milioni di ZVT iniziali
+        };
+
+        system_log("ZDOS-STATE: Stato di Genesis inizializzato correttamente.");
+        return state;
+    }
+
+    // Applicazione del blocco e aggiornamento dello stato globale
+    pub fn apply_block(state: ChainState, block: ZDOSConsensus::ConsensusBlock) -> ChainState {
+        let updated_state = ChainState {
+            current_height: block.height + 1,
+            latest_hash: block.merkle_root,
+            total_transactions_processed: state.total_transactions_processed + 15,
+            circulating_zvt: state.circulating_zvt + 100 // Reward di blocco
+        };
+
+        system_log("ZDOS-STATE: Stato aggiornato alla nuova altezza -> " + string(updated_state.current_height));
+        return updated_state;
+    }
+}

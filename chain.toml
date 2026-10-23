@@ -1,0 +1,12 @@
+[package]
+name = "zdos-chain"
+version = "1.0.0"
+author = "HighKali <highkali13@proton.me>"
+ecosystem = "ZDOS-Sovereign"
+language = "ZLang"
+runtime = "ZLB2"
+
+[consensus]
+algorithm = "Proof-of-Sovereignty"
+block_time_ms = 2500
+max_tx_per_block = 1000

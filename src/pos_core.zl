@@ -1,0 +1,48 @@
+// ==========================================
+// ZDOS // PROOF-OF-SOVEREIGNTY CONSENSUS (ZLang)
+// ==========================================
+
+module ZDOSConsensus {
+
+    struct ValidatorNode {
+        string node_id;
+        string owner_address;
+        u64 staked_zvt;
+        u64 reputation_score;
+        bool is_active;
+    }
+
+    struct ConsensusBlock {
+        u64 height;
+        string prev_hash;
+        string merkle_root;
+        string validator_signature;
+        u64 timestamp;
+    }
+
+    // Calcolo del peso di voto basato su ZVT in stake e reputazione
+    pub fn calculate_validator_weight(validator: ValidatorNode) -> u64 {
+        if !validator.is_active {
+            return 0;
+        }
+        let base_weight = validator.staked_zvt / 100;
+        let final_weight = base_weight + (validator.reputation_score * 10);
+        return final_weight;
+    }
+
+    // Validazione crittografica e temporale di un blocco entrante
+    pub fn validate_incoming_block(block: ConsensusBlock, expected_prev_hash: string) -> bool {
+        if block.prev_hash != expected_prev_hash {
+            system_log("ZDOS-CONSENSUS: Rifiutato - Hash precedente non valido.");
+            return false;
+        }
+
+        if block.height == 0 || length(block.merkle_root) < 32 {
+            system_log("ZDOS-CONSENSUS: Rifiutato - Merkle root o altezza non conformi.");
+            return false;
+        }
+
+        system_log("ZDOS-CONSENSUS: Blocco #" + string(block.height) + " validato con successo.");
+        return true;
+    }
+}

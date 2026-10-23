@@ -1,0 +1,42 @@
+// ==========================================
+// ZDOS // SOVEREIGN BLOCKCHAIN MAIN (ZLang)
+// ==========================================
+
+import ZDOSConsensus;
+import ZDOSChainState;
+
+pub fn main() -> int {
+    system_log("=== AVVIO NODED ZDOS SOVEREIGN BLOCKCHAIN ===");
+
+    // 1. Inizializzazione dello stato globale
+    let mut chain_state = ZDOSChainState::init_genesis_state();
+
+    // 2. Definizione di un nodo validatore di test
+    let primary_validator = ZDOSConsensus::ValidatorNode {
+        node_id: "NODE_ZDOS_ALPHA_01",
+        owner_address: "ZVT_MASTER_SOVEREIGN_99",
+        staked_zvt: 250000,
+        reputation_score: 998,
+        is_active: true
+    };
+
+    let weight = ZDOSConsensus::calculate_validator_weight(primary_validator);
+    system_log("Validatore attivo con peso di consenso: " + string(weight));
+
+    // 3. Simulazione ricezione e validazione di un nuovo blocco
+    let new_block = ZDOSConsensus::ConsensusBlock {
+        height: chain_state.current_height,
+        prev_hash: chain_state.latest_hash,
+        merkle_root: crypto_sha256_hex("ZDOS_BLOCK_DATA_PAYLOAD_SEQUENCE_001"),
+        validator_signature: "sig_sovereign_valid_ed25519",
+        timestamp: system_timestamp_ms()
+    };
+
+    if ZDOSConsensus::validate_incoming_block(new_block, chain_state.latest_hash) {
+        chain_state = ZDOSChainState::apply_block(chain_state, new_block);
+        system_log("Blockchain sincronizzata. Altezza corrente: " + string(chain_state.current_height));
+    }
+
+    system_log("=== ZDOS BLOCKCHAIN: Ciclo di esecuzione completato ===");
+    return 0;
+}
