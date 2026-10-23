@@ -4,30 +4,35 @@
 
 import ZDOSConsensus;
 import ZDOSChainState;
+import ZDOSTokenLedger;
 
 pub fn main() -> int {
-    system_log("=== AVVIO NODED ZDOS SOVEREIGN BLOCKCHAIN ===");
+    system_log("=== AVVIO NODO ZDOS SOVEREIGN BLOCKCHAIN ===");
 
     // 1. Inizializzazione dello stato globale
     let mut chain_state = ZDOSChainState::init_genesis_state();
 
-    // 2. Definizione di un nodo validatore di test
-    let primary_validator = ZDOSConsensus::ValidatorNode {
-        node_id: "NODE_ZDOS_ALPHA_01",
-        owner_address: "ZVT_MASTER_SOVEREIGN_99",
-        staked_zvt: 250000,
-        reputation_score: 998,
-        is_active: true
+    // 2. Definizione dei conti di test
+    let acc_sender = ZDOSTokenLedger::AccountBalance {
+        address: "ZVT_MASTER_SOVEREIGN_99",
+        zvt_balance: 100000,
+        dsn_balance: 5000
     };
 
-    let weight = ZDOSConsensus::calculate_validator_weight(primary_validator);
-    system_log("Validatore attivo con peso di consenso: " + string(weight));
+    let acc_recipient = ZDOSTokenLedger::AccountBalance {
+        address: "ZVT_RECIPIENT_SECURE_88B",
+        zvt_balance: 500,
+        dsn_balance: 100
+    };
 
-    // 3. Simulazione ricezione e validazione di un nuovo blocco
+    // 3. Esecuzione del trasferimento nativo
+    ZDOSTokenLedger::transfer_tokens(acc_sender, acc_recipient, 2500, 50);
+
+    // 4. Validazione e commit del blocco
     let new_block = ZDOSConsensus::ConsensusBlock {
         height: chain_state.current_height,
         prev_hash: chain_state.latest_hash,
-        merkle_root: crypto_sha256_hex("ZDOS_BLOCK_DATA_PAYLOAD_SEQUENCE_001"),
+        merkle_root: crypto_sha256_hex("ZDOS_TX_BATCH_PAYLOAD_001"),
         validator_signature: "sig_sovereign_valid_ed25519",
         timestamp: system_timestamp_ms()
     };
@@ -37,6 +42,6 @@ pub fn main() -> int {
         system_log("Blockchain sincronizzata. Altezza corrente: " + string(chain_state.current_height));
     }
 
-    system_log("=== ZDOS BLOCKCHAIN: Ciclo di esecuzione completato ===");
+    system_log("=== ZDOS BLOCKCHAIN: Ciclo completato con successo ===");
     return 0;
 }

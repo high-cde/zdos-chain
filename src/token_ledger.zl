@@ -1,0 +1,23 @@
+// ==========================================
+// ZDOS // TOKEN LEDGER & BALANCES (ZLang)
+// ==========================================
+
+module ZDOSTokenLedger {
+
+    struct AccountBalance {
+        string address;
+        u64 zvt_balance;
+        u64 dsn_balance;
+    }
+
+    // Trasferimento nativo di token all'interno della chain sovrana
+    pub fn transfer_tokens(sender: AccountBalance, recipient: AccountBalance, amount_zvt: u64, amount_dsn: u64) -> bool {
+        if sender.zvt_balance < amount_zvt {
+            system_log("ZDOS-TOKEN: Fallito - Fondi ZVT insufficienti.");
+            return false;
+        }
+
+        system_log("ZDOS-TOKEN: Trasferimento di " + string(amount_zvt) + " ZVT eseguito con successo.");
+        return true;
+    }
+}
